@@ -23,6 +23,7 @@ jobs:
 
   android-arm64:
     name: Android arm64 APK
+    if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -42,7 +43,6 @@ jobs:
           cargo install cargo-ndk --locked --version 2.6.0
           cargo install uniffi --locked --version 0.32.0 --features cli --bin uniffi-bindgen
       - name: Restore release keystore
-        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -57,29 +57,14 @@ jobs:
           mkdir -p "$RUNNER_TEMP/android-signing"
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/android-signing/release.keystore"
           echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/android-signing/release.keystore" >> "$GITHUB_ENV"
-      - name: Build debug Android artifacts for pull request
-        if: github.event_name == 'pull_request' || github.ref != format('refs/heads/{0}', github.event.repository.default_branch)
-        env:
-          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.12077973
-        run: bash scripts/mobile/build-android.sh --target arm64-v8a --assemble-apk
       - name: Build signed release Android artifacts
-        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         env:
           ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.12077973
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: bash scripts/mobile/build-android.sh --target arm64-v8a --build-type release --assemble-apk
-      - name: Upload debug APK
-        if: github.event_name == 'pull_request' || github.ref != format('refs/heads/{0}', github.event.repository.default_branch)
-        uses: actions/upload-artifact@v4
-        with:
-          name: torchnexus-android-arm64-debug
-          path: |
-            apps/android/app/build/outputs/apk/debug/app-debug.apk
-            apps/android/app/src/main/jniLibs/arm64-v8a/libtorchnexus_mobile_engine.so
       - name: Upload signed release APK
-        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         uses: actions/upload-artifact@v4
         with:
           name: torchnexus-android-arm64-release
@@ -87,5 +72,5 @@ jobs:
             apps/android/app/build/outputs/apk/release/app-release.apk
             apps/android/app/src/main/jniLibs/arm64-v8a/libtorchnexus_mobile_engine.so
       - name: Remove release keystore
-        if: always() && github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        if: always()
         run: rm -f "${ANDROID_KEYSTORE_FILE:-}"
