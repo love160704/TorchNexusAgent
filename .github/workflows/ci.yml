@@ -1,0 +1,91 @@
+name: Package
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  windows-cli:
+    name: Windows CLI
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+      - name: Build release CLI
+        run: cargo build --release -p torchnexus-agent --target x86_64-pc-windows-msvc
+      - uses: actions/upload-artifact@v4
+        with:
+          name: torchnexus-windows-cli
+          path: target/x86_64-pc-windows-msvc/release/torchnexus-agent.exe
+
+  android-arm64:
+    name: Android arm64 APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+      - uses: android-actions/setup-android@v3
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;27.0.12077973"
+      - name: Install Rust mobile build tools
+        run: |
+          cargo install cargo-ndk --locked --version 2.6.0
+          cargo install uniffi --locked --version 0.32.0 --features cli --bin uniffi-bindgen
+      - name: Restore release keystore
+        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          : "${ANDROID_KEYSTORE_BASE64:?GitHub secret ANDROID_KEYSTORE_BASE64 is not configured}"
+          : "${ANDROID_KEYSTORE_PASSWORD:?GitHub secret ANDROID_KEYSTORE_PASSWORD is not configured}"
+          : "${ANDROID_KEY_ALIAS:?GitHub secret ANDROID_KEY_ALIAS is not configured}"
+          : "${ANDROID_KEY_PASSWORD:?GitHub secret ANDROID_KEY_PASSWORD is not configured}"
+          mkdir -p "$RUNNER_TEMP/android-signing"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/android-signing/release.keystore"
+          echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/android-signing/release.keystore" >> "$GITHUB_ENV"
+      - name: Build debug Android artifacts for pull request
+        if: github.event_name == 'pull_request' || github.ref != format('refs/heads/{0}', github.event.repository.default_branch)
+        env:
+          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.12077973
+        run: bash scripts/mobile/build-android.sh --target arm64-v8a --assemble-apk
+      - name: Build signed release Android artifacts
+        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        env:
+          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.12077973
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: bash scripts/mobile/build-android.sh --target arm64-v8a --build-type release --assemble-apk
+      - name: Upload debug APK
+        if: github.event_name == 'pull_request' || github.ref != format('refs/heads/{0}', github.event.repository.default_branch)
+        uses: actions/upload-artifact@v4
+        with:
+          name: torchnexus-android-arm64-debug
+          path: |
+            apps/android/app/build/outputs/apk/debug/app-debug.apk
+            apps/android/app/src/main/jniLibs/arm64-v8a/libtorchnexus_mobile_engine.so
+      - name: Upload signed release APK
+        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        uses: actions/upload-artifact@v4
+        with:
+          name: torchnexus-android-arm64-release
+          path: |
+            apps/android/app/build/outputs/apk/release/app-release.apk
+            apps/android/app/src/main/jniLibs/arm64-v8a/libtorchnexus_mobile_engine.so
+      - name: Remove release keystore
+        if: always() && github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        run: rm -f "${ANDROID_KEYSTORE_FILE:-}"

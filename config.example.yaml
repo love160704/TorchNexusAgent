@@ -1,0 +1,42 @@
+listen:
+  socks5:
+    enabled: true
+    bind: "0.0.0.0:1080"
+    # 局域网使用时请设置随机凭据；留空 auth 可兼容旧的无认证客户端。
+#    auth:
+#      username: "torchnexus"
+#      password: "change-this-random-password"
+  http:
+    enabled: true
+    bind: "0.0.0.0:1081"
+    # 局域网使用时请设置随机凭据；留空 auth 可兼容旧的无认证客户端。
+#    auth:
+#      username: "torchnexus"
+#      password: "torchnexus"
+  tcp:
+    - name: "game-server-1002"
+      bind: "0.0.0.0:1002"
+      remote: "60.205.202.26:1002"
+capture:
+  targets:
+    - ip: "60.205.202.26"
+      ports: [1002]
+  save_dir: "./captures"
+  save_uncaptured_sessions: false
+upload:
+  enabled: true
+  # 请不要随便乱改
+  endpoint: "https://torchnexus.cc/api/v1/app/tcp-batches"
+  basic_auth:
+    username: "agent"
+    password: "change-me"
+  auto_package_on_disconnect: true
+  upload_interval_seconds: 60
+  request_timeout_seconds: 300
+  retry:
+    max_attempts: 5
+    base_delay_seconds: 3
+storage:
+  flush_each_chunk: true
+log:
+  level: "info"

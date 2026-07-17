@@ -1,0 +1,22 @@
+name: TorchNexusAgent
+options:
+  bundleIdPrefix: com.torchnexus
+targets:
+  TorchNexusAgent:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources: [TorchNexusAgent]
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.torchnexus.agent
+    dependencies:
+      - target: TorchNexusTunnel
+  TorchNexusTunnel:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources: [TorchNexusTunnel]
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.torchnexus.agent.tunnel
+      INFOPLIST_FILE: TorchNexusTunnel/Info.plist
+      CODE_SIGN_ENTITLEMENTS: TorchNexusTunnel/TorchNexusTunnel.entitlements

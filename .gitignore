@@ -1,0 +1,11 @@
+.worktrees/
+target/
+/target
+*.local.yaml
+upload_queue
+uploaded
+captures
+.idea
+apps/android/keystore.properties
+apps/android/*.jks
+apps/android/*.keystore

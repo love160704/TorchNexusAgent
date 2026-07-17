@@ -1,0 +1,15 @@
+{
+  "package_name": "torchnexus-agent-storage",
+  "package_version": "0.1.6",
+  "platform": "windows",
+  "target": "x86_64-pc-windows-msvc",
+  "profile": "release",
+  "artifact_name": "torchnexus_agent_storage.lib",
+  "header_name": "torchnexus_agent_storage.h",
+  "artifact_path": "torchnexus_agent_storage.lib",
+  "header_path": "torchnexus_agent_storage.h",
+  "host": "x86_64-pc-windows-msvc",
+  "built_at": "2026-07-17T02:51:17.497314500+00:00",
+  "tool": "cargo",
+  "abi": "msvc"
+}

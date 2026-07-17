@@ -1,0 +1,15 @@
+{
+  "package_name": "torchnexus-agent-storage",
+  "package_version": "0.1.6",
+  "platform": "android",
+  "target": "aarch64-linux-android",
+  "profile": "release",
+  "artifact_name": "libtorchnexus_agent_storage.a",
+  "header_name": "torchnexus_agent_storage.h",
+  "artifact_path": "libtorchnexus_agent_storage.a",
+  "header_path": "torchnexus_agent_storage.h",
+  "host": "x86_64-unknown-linux-gnu",
+  "built_at": "2026-07-17T02:50:56.257494766+00:00",
+  "tool": "cargo-ndk",
+  "abi": "arm64-v8a"
+}

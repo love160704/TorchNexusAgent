@@ -1,0 +1,6 @@
+[bindings.kotlin]
+package_name = "com.torchnexus.agent.rust"
+android = true
+
+[bindings.swift]
+module_name = "TorchNexusMobile"

@@ -1,0 +1,30 @@
+[package]
+name = "torchnexus-mobile-engine"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[dependencies]
+anyhow.workspace = true
+tokio.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+uniffi.workspace = true
+torchnexus-core = { path = "../core" }
+torchnexus-runtime = { path = "../runtime" }
+
+[target.'cfg(any(target_os = "android", target_os = "ios"))'.dependencies]
+tun2proxy = "0.8.2"
+
+[target.'cfg(target_os = "android")'.dependencies]
+android_logger = "0.15"
+log.workspace = true
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

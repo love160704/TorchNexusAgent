@@ -1,0 +1,33 @@
+[package]
+name = "torchnexus-agent"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+build = "build.rs"
+
+[dependencies]
+anyhow.workspace = true
+chrono.workspace = true
+clap.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+torchnexus-proxy-socks5 = { path = "../proxy-socks5" }
+torchnexus-core = { path = "../core" }
+torchnexus-proxy-tcp = { path = "../proxy-tcp" }
+torchnexus-storage-support = { path = "../storage-support" }
+torchnexus-uploader = { path = "../uploader" }
+torchnexus-runtime = { path = "../runtime" }
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[dev-dependencies]
+assert_cmd.workspace = true
+predicates.workspace = true
+socks5-proto = "0.4.1"
+tempfile.workspace = true
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

@@ -1,0 +1,22 @@
+[package]
+name = "torchnexus-runtime"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+build = "build.rs"
+
+[dependencies]
+anyhow.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+torchnexus-core = { path = "../core" }
+torchnexus-proxy-http = { path = "../proxy-http" }
+torchnexus-proxy-socks5 = { path = "../proxy-socks5" }
+torchnexus-proxy-tcp = { path = "../proxy-tcp" }
+torchnexus-storage-support = { path = "../storage-support" }
+torchnexus-uploader = { path = "../uploader" }
+
+[dev-dependencies]
+base64.workspace = true
+socks5-proto = "0.4.1"
+tempfile.workspace = true
