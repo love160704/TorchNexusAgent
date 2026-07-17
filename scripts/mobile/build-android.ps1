@@ -39,4 +39,10 @@ if ($AssembleApk) {
     Push-Location apps/android
     try { .\gradlew.bat ":app:assemble$variant" --no-daemon }
     finally { Pop-Location }
+    if ($BuildType -eq 'release') {
+        $releaseApk = 'apps/android/app/build/outputs/apk/release/app-release.apk'
+        $renamedApk = 'apps/android/app/build/outputs/apk/release/torchnexus-agent-arm64-release.apk'
+        if (-not (Test-Path $releaseApk)) { throw "Release APK was not found: $releaseApk" }
+        Move-Item -LiteralPath $releaseApk -Destination $renamedApk -Force
+    }
 }

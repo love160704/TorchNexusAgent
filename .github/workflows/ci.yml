@@ -38,29 +38,6 @@ jobs:
       - uses: android-actions/setup-android@v4
       - name: Install Android SDK packages
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;27.0.12077973"
-      - name: Diagnose arm64 Android NDK toolchain
-        run: |
-          set -euo pipefail
-          ndk_dir="$ANDROID_HOME/ndk/27.0.12077973"
-          prebuilt_dir="$ndk_dir/toolchains/llvm/prebuilt"
-          host_tag="$(find "$prebuilt_dir" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort | head -n 1)"
-          llvm_ar="$prebuilt_dir/$host_tag/bin/llvm-ar"
-
-          echo "runner architecture: $(uname -m)"
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          echo "ANDROID_NDK_HOME=${ANDROID_NDK_HOME:-未设置}"
-          echo "NDK host tag=$host_tag"
-          test -n "$host_tag"
-          test -x "$llvm_ar"
-          ls -la "$prebuilt_dir/$host_tag/bin/llvm-ar"
-          file "$llvm_ar"
-          readlink -f "$llvm_ar"
-          "$llvm_ar" --version
-          if [[ -e "$prebuilt_dir/$host_tag/bin/aarch64-linux-android-ar" ]]; then
-            echo "检测到旧式 aarch64-linux-android-ar 包装器"
-          else
-            echo "未检测到 aarch64-linux-android-ar；NDK r27 应使用 llvm-ar"
-          fi
       - name: Install Rust mobile build tools
         run: |
           cargo install cargo-ndk --locked --version 4.1.2
@@ -83,6 +60,7 @@ jobs:
       - name: Build signed release Android artifacts
         env:
           ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/27.0.12077973
+          ANDROID_NDK_ROOT: ${{ env.ANDROID_HOME }}/ndk/27.0.12077973
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}

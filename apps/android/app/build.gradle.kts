@@ -40,6 +40,7 @@ val releaseKeyPassword = firstSigningValue(
 android {
     namespace = "com.torchnexus.agent"
     compileSdk = 35
+    ndkVersion = "27.0.12077973"
 
     defaultConfig {
         applicationId = "com.torchnexus.agent"
@@ -92,14 +93,6 @@ android {
                 "lib/x86_64/**",
                 "**/libtun2proxy.so",
             )
-        }
-    }
-}
-
-androidComponents {
-    onVariants(selector().withBuildType("release")) { variant ->
-        variant.outputs.forEach { output ->
-            output.outputFileName.set("torchnexus-agent-arm64-release.apk")
         }
     }
 }

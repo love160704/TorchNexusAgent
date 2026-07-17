@@ -78,4 +78,10 @@ uniffi-bindgen generate "target/$rust_target/release/libtorchnexus_mobile_engine
 
 if [[ "$assemble_apk" == true ]]; then
   (cd apps/android && bash ./gradlew ":app:$assemble_task" --no-daemon)
+  if [[ "$build_type" == release ]]; then
+    release_apk="apps/android/app/build/outputs/apk/release/app-release.apk"
+    renamed_apk="apps/android/app/build/outputs/apk/release/torchnexus-agent-arm64-release.apk"
+    [[ -f "$release_apk" ]] || { echo "Release APK was not found: $release_apk" >&2; exit 1; }
+    mv -f "$release_apk" "$renamed_apk"
+  fi
 fi
