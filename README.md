@@ -101,7 +101,7 @@ cargo build --release -p torchnexus-agent --target x86_64-pc-windows-msvc
 .\scripts\mobile\build-android.ps1 -Target arm64-v8a -BuildType release -AssembleApk
 ```
 
-正式发布还需预先配置自己的 Android 签名证书与签名信息；未配置签名时，请只生成 Debug APK 用于内部测试。产物路径为 `apps\android\app\build\outputs\apk\release\app-release.apk`。安装到真机后，至少完成一次保存配置、授权 VPN、启动和停止的验收。
+正式发布还需预先配置自己的 Android 签名证书与签名信息；未配置签名时，请只生成 Debug APK 用于内部测试。Release 产物路径为 `apps\android\app\build\outputs\apk\release\torchnexus-agent-arm64-release.apk`。安装到真机后，至少完成一次保存配置、授权 VPN、启动和停止的验收。
 
 更多 Android 安装与使用说明见 [Android 使用指南](docs/android.md)。
 

@@ -96,6 +96,14 @@ android {
     }
 }
 
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        variant.outputs.forEach { output ->
+            output.outputFileName.set("torchnexus-agent-arm64-release.apk")
+        }
+    }
+}
+
 val verifyReleaseSigning by tasks.registering {
     doLast {
         val missingSettings = listOf(

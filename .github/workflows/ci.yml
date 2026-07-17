@@ -68,9 +68,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: torchnexus-android-arm64-release
-          path: |
-            apps/android/app/build/outputs/apk/release/app-release.apk
-            apps/android/app/src/main/jniLibs/arm64-v8a/libtorchnexus_mobile_engine.so
+          path: apps/android/app/build/outputs/apk/release/torchnexus-agent-arm64-release.apk
       - name: Remove release keystore
         if: always()
         run: rm -f "${ANDROID_KEYSTORE_FILE:-}"
