@@ -43,6 +43,10 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android
+      - name: 缓存 Rust 依赖与 Android 编译产物
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: android-arm64-v1
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -51,10 +55,8 @@ jobs:
       - uses: android-actions/setup-android@v4
       - name: Install Android SDK packages
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;27.0.12077973"
-      - name: Install Rust mobile build tools
-        run: |
-          cargo install cargo-ndk --locked --version 4.1.2
-          cargo install uniffi --locked --version 0.32.0 --features cli --bin uniffi-bindgen
+      - name: 安装 cargo-ndk
+        run: cargo install cargo-ndk --locked --version 4.1.2
       - name: Restore release keystore
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -99,7 +101,7 @@ jobs:
       RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
     steps:
       - name: 下载发布工件
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: release-targets
           merge-multiple: true

@@ -15,10 +15,6 @@ if (-not $env:ANDROID_NDK_HOME) {
         Select-Object -First 1 -ExpandProperty FullName
 }
 if (-not $env:ANDROID_NDK_HOME) { throw 'ANDROID_NDK_HOME is not set and no NDK was found under ANDROID_HOME\ndk.' }
-if (-not (Get-Command uniffi-bindgen -ErrorAction SilentlyContinue)) {
-    throw 'Install uniffi-bindgen 0.32.0 before building bindings.'
-}
-
 $rustTarget = @{ 'arm64-v8a' = 'aarch64-linux-android'; 'armeabi-v7a' = 'armv7-linux-androideabi'; 'x86_64' = 'x86_64-linux-android' }[$Target]
 $ndkBin = Join-Path $env:ANDROID_NDK_HOME 'toolchains\llvm\prebuilt\windows-x86_64\bin'
 $llvmAr = Join-Path $ndkBin 'llvm-ar.exe'
@@ -33,7 +29,7 @@ $tun2proxyLibrary = Join-Path "apps/android/app/src/main/jniLibs/$Target" 'libtu
 if (Test-Path $tun2proxyLibrary) {
     Remove-Item -LiteralPath $tun2proxyLibrary -Force
 }
-uniffi-bindgen generate target/$rustTarget/release/libtorchnexus_mobile_engine.so --language kotlin --out-dir apps/android/app/src/main/java --metadata-no-deps --no-format
+cargo run --locked -p torchnexus-core --features uniffi-bindgen --bin uniffi-bindgen -- generate target/$rustTarget/release/libtorchnexus_mobile_engine.so --language kotlin --out-dir apps/android/app/src/main/java --metadata-no-deps --no-format
 if ($AssembleApk) {
     $variant = $BuildType.Substring(0, 1).ToUpperInvariant() + $BuildType.Substring(1)
     Push-Location apps/android

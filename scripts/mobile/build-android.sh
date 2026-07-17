@@ -65,7 +65,6 @@ ndk_bin="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin"
 llvm_ar="$ndk_bin/llvm-ar"
 [[ -x "$llvm_ar" ]] || { echo "NDK llvm-ar was not found: $llvm_ar" >&2; exit 1; }
 command -v cargo-ndk >/dev/null || { echo "Install cargo-ndk before building." >&2; exit 1; }
-command -v uniffi-bindgen >/dev/null || { echo "Install uniffi-bindgen 0.32.0 before generating bindings." >&2; exit 1; }
 
 rustup target add "$rust_target"
 cargo_target="${rust_target^^}"
@@ -73,7 +72,7 @@ cargo_target="${cargo_target//-/_}"
 export "CARGO_TARGET_${cargo_target}_AR=$llvm_ar"
 
 cargo ndk -t "$target" -o apps/android/app/src/main/jniLibs build -p torchnexus-mobile-engine --release
-uniffi-bindgen generate "target/$rust_target/release/libtorchnexus_mobile_engine.so" \
+cargo run --locked -p torchnexus-core --features uniffi-bindgen --bin uniffi-bindgen -- generate "target/$rust_target/release/libtorchnexus_mobile_engine.so" \
   --language kotlin --out-dir apps/android/app/src/main/java --metadata-no-deps --no-format
 
 if [[ "$assemble_apk" == true ]]; then

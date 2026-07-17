@@ -4,6 +4,14 @@ version = "0.1.0"
 edition.workspace = true
 license.workspace = true
 
+[features]
+uniffi-bindgen = ["dep:uniffi", "uniffi/cli"]
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/bin/uniffi-bindgen.rs"
+required-features = ["uniffi-bindgen"]
+
 [dependencies]
 anyhow.workspace = true
 chrono.workspace = true
@@ -12,3 +20,4 @@ serde_yaml.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
 uuid.workspace = true
+uniffi = { workspace = true, optional = true }

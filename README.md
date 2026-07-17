@@ -95,7 +95,7 @@ cargo build --release -p torchnexus-agent --target x86_64-pc-windows-msvc
 
 ### Android APK
 
-需要 Android SDK、NDK、Java 21、Rust 稳定版、`cargo-ndk 4.1.2` 与 `uniffi-bindgen 0.32.0`。设置 `ANDROID_HOME`（并确保可找到 NDK）后，在 Windows 运行：
+需要 Android SDK、NDK、Java 21、Rust 稳定版与 `cargo-ndk 4.1.2`。UniFFI 绑定生成器通过 core crate 的本地可选二进制自动编译，无需单独安装。设置 `ANDROID_HOME`（并确保可找到 NDK）后，在 Windows 运行：
 
 ```powershell
 .\scripts\mobile\build-android.ps1 -Target arm64-v8a -BuildType release -AssembleApk
@@ -107,7 +107,7 @@ cargo build --release -p torchnexus-agent --target x86_64-pc-windows-msvc
 
 ### iOS 应用
 
-iOS 打包只能在 macOS 上完成，并且需要有效的 Apple 开发者签名能力及 Packet Tunnel 权限。准备 Xcode、XcodeGen、Rust 稳定版和 `uniffi-bindgen 0.32.0` 后：
+iOS 打包只能在 macOS 上完成，并且需要有效的 Apple 开发者签名能力及 Packet Tunnel 权限。准备 Xcode、XcodeGen 与 Rust 稳定版后：
 
 ```bash
 bash scripts/mobile/build-ios.sh

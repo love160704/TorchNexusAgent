@@ -25,9 +25,3 @@ assert_cmd.workspace = true
 predicates.workspace = true
 socks5-proto = "0.4.1"
 tempfile.workspace = true
-[profile.release]
-opt-level = 3
-lto = true
-codegen-units = 1
-panic = "abort"
-strip = true

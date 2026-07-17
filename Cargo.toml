@@ -16,6 +16,14 @@ resolver = "2"
 edition = "2021"
 license = "MIT"
 
+# Cargo 只读取工作区根目录的 profile 配置。
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
 [workspace.dependencies]
 anyhow = "1"
 async-trait = "0.1"
