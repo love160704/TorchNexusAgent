@@ -57,7 +57,7 @@ cargo build --release -p torchnexus-agent --target x86_64-pc-windows-msvc
 bash scripts/mobile/build-ios.sh
 ```
 
-Android 构建依赖 Android SDK、NDK、Java 21、Rust、`cargo-ndk 2.6.0` 与 `uniffi-bindgen 0.32.0`。iOS 构建还需要 macOS、Xcode、XcodeGen 和具有 Packet Tunnel 权限的有效签名团队。
+Android 构建依赖 Android SDK、NDK、Java 21、Rust、`cargo-ndk 4.1.2` 与 `uniffi-bindgen 0.32.0`。iOS 构建还需要 macOS、Xcode、XcodeGen 和具有 Packet Tunnel 权限的有效签名团队。
 
 ## 修改规则
 

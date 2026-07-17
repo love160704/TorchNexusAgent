@@ -95,7 +95,7 @@ cargo build --release -p torchnexus-agent --target x86_64-pc-windows-msvc
 
 ### Android APK
 
-需要 Android SDK、NDK、Java 21、Rust 稳定版、`cargo-ndk 2.6.0` 与 `uniffi-bindgen 0.32.0`。设置 `ANDROID_HOME`（并确保可找到 NDK）后，在 Windows 运行：
+需要 Android SDK、NDK、Java 21、Rust 稳定版、`cargo-ndk 4.1.2` 与 `uniffi-bindgen 0.32.0`。设置 `ANDROID_HOME`（并确保可找到 NDK）后，在 Windows 运行：
 
 ```powershell
 .\scripts\mobile\build-android.ps1 -Target arm64-v8a -BuildType release -AssembleApk
