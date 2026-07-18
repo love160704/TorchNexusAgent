@@ -2,8 +2,8 @@
 interface MobileEngineError {
   AlreadyRunning();
   NotRunning();
-  Configuration(string message);
-  Runtime(string message);
+  Configuration(string detail);
+  Runtime(string detail);
   UnsupportedPlatform();
 };
 

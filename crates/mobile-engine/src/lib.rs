@@ -25,10 +25,10 @@ pub enum MobileEngineError {
     AlreadyRunning,
     #[error("mobile engine is not running")]
     NotRunning,
-    #[error("invalid configuration: {message}")]
-    Configuration { message: String },
-    #[error("failed to start runtime: {message}")]
-    Runtime { message: String },
+    #[error("invalid configuration: {detail}")]
+    Configuration { detail: String },
+    #[error("failed to start runtime: {detail}")]
+    Runtime { detail: String },
     #[error("TUN forwarding is only available on Android and iOS")]
     UnsupportedPlatform,
 }
@@ -83,14 +83,14 @@ impl MobileEngine {
 
         let config = AppConfig::from_yaml_str(&config_yaml).map_err(|error| {
             MobileEngineError::Configuration {
-                message: error.to_string(),
+                detail: error.to_string(),
             }
         })?;
         let runtime = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()
             .map_err(|error| MobileEngineError::Runtime {
-                message: error.to_string(),
+                detail: error.to_string(),
             })?;
         let agent = runtime
             .block_on(AgentRuntime::start_with_private_socks5(
@@ -102,7 +102,7 @@ impl MobileEngine {
                 ),
             ))
             .map_err(|error| MobileEngineError::Runtime {
-                message: error.to_string(),
+                detail: error.to_string(),
             })?;
         let port = agent
             .private_socks5_bind_addr()
@@ -135,7 +135,7 @@ impl MobileEngine {
             .runtime
             .block_on(running.agent.stop())
             .map_err(|error| MobileEngineError::Runtime {
-                message: error.to_string(),
+                detail: error.to_string(),
             });
         if agent_stop_result.is_ok() {
             tracing::info!("移动端采集引擎已停止");
@@ -161,7 +161,7 @@ fn start_tunnel(
     let mut args = tun2proxy::Args::default();
     args.proxy = tun2proxy::ArgProxy::try_from(format!("socks5://127.0.0.1:{port}").as_str())
         .map_err(|error| MobileEngineError::Runtime {
-            message: error.to_string(),
+            detail: error.to_string(),
         })?;
     args.tun_fd = Some(
         owned_tun_fd

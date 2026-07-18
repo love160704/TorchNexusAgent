@@ -1428,18 +1428,18 @@ sealed class MobileEngineException: kotlin.Exception() {
     
     class Configuration(
         
-        val `message`: kotlin.String
+        val `detail`: kotlin.String
         ) : MobileEngineException() {
         override val message
-            get() = "message=${ `message` }"
+            get() = "detail=${ `detail` }"
     }
     
     class Runtime(
         
-        val `message`: kotlin.String
+        val `detail`: kotlin.String
         ) : MobileEngineException() {
         override val message
-            get() = "message=${ `message` }"
+            get() = "detail=${ `detail` }"
     }
     
     class UnsupportedPlatform(
@@ -1493,12 +1493,12 @@ public object FfiConverterTypeMobileEngineError : FfiConverterRustBuffer<MobileE
             is MobileEngineException.Configuration -> (
                 // Add the size for the Int that specifies the variant plus the size needed for all fields
                 4UL
-                + FfiConverterString.allocationSize(value.`message`)
+                + FfiConverterString.allocationSize(value.`detail`)
             )
             is MobileEngineException.Runtime -> (
                 // Add the size for the Int that specifies the variant plus the size needed for all fields
                 4UL
-                + FfiConverterString.allocationSize(value.`message`)
+                + FfiConverterString.allocationSize(value.`detail`)
             )
             is MobileEngineException.UnsupportedPlatform -> (
                 // Add the size for the Int that specifies the variant plus the size needed for all fields
@@ -1519,12 +1519,12 @@ public object FfiConverterTypeMobileEngineError : FfiConverterRustBuffer<MobileE
             }
             is MobileEngineException.Configuration -> {
                 buf.putInt(3)
-                FfiConverterString.write(value.`message`, buf)
+                FfiConverterString.write(value.`detail`, buf)
                 Unit
             }
             is MobileEngineException.Runtime -> {
                 buf.putInt(4)
-                FfiConverterString.write(value.`message`, buf)
+                FfiConverterString.write(value.`detail`, buf)
                 Unit
             }
             is MobileEngineException.UnsupportedPlatform -> {
