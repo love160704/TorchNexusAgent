@@ -72,7 +72,7 @@ cargo_target="${cargo_target//-/_}"
 export "CARGO_TARGET_${cargo_target}_AR=$llvm_ar"
 
 cargo ndk -t "$target" -o apps/android/app/src/main/jniLibs build -p torchnexus-mobile-engine --release
-cargo run --locked -p torchnexus-core --features uniffi-bindgen --bin uniffi-bindgen -- generate "target/$rust_target/release/libtorchnexus_mobile_engine.so" \
+cargo run --locked -p torchnexus-core --features uniffi-bindgen --bin uniffi-bindgen -- generate crates/mobile-engine/src/torchnexus_mobile_engine.udl \
   --language kotlin --out-dir apps/android/app/src/main/java --metadata-no-deps --no-format
 
 if [[ "$assemble_apk" == true ]]; then

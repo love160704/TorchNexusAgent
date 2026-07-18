@@ -1,0 +1,18 @@
+[Error]
+interface MobileEngineError {
+  AlreadyRunning();
+  NotRunning();
+  Configuration(string message);
+  Runtime(string message);
+  UnsupportedPlatform();
+};
+
+namespace torchnexus_mobile_engine {};
+
+interface MobileEngine {
+  constructor();
+  [Throws=MobileEngineError]
+  u16 start(i32 tun_fd, boolean close_tun_fd, string config_yaml, u16 mtu, boolean packet_information);
+  [Throws=MobileEngineError]
+  void stop();
+};

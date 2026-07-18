@@ -18,7 +18,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: refs/tags/${{ inputs.tag || github.ref_name }}
       - uses: dtolnay/rust-toolchain@stable
@@ -26,7 +26,7 @@ jobs:
           targets: x86_64-pc-windows-msvc
       - name: Build release CLI
         run: cargo build --release -p torchnexus-agent --target x86_64-pc-windows-msvc
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: torchnexus-windows-cli
           path: target/x86_64-pc-windows-msvc/release/torchnexus-agent.exe
@@ -37,7 +37,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: refs/tags/${{ inputs.tag || github.ref_name }}
       - uses: dtolnay/rust-toolchain@stable
@@ -81,7 +81,7 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: bash scripts/mobile/build-android.sh --target arm64-v8a --build-type release --assemble-apk
       - name: Upload signed release APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: torchnexus-android-arm64-release
           path: apps/android/app/build/outputs/apk/release/torchnexus-agent-arm64-release.apk

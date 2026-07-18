@@ -16,6 +16,9 @@ uniffi.workspace = true
 torchnexus-core = { path = "../core" }
 torchnexus-runtime = { path = "../runtime" }
 
+[build-dependencies]
+uniffi = { workspace = true, features = ["build"] }
+
 [target.'cfg(any(target_os = "android", target_os = "ios"))'.dependencies]
 tun2proxy = "0.8.2"
 

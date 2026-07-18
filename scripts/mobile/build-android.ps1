@@ -29,7 +29,7 @@ $tun2proxyLibrary = Join-Path "apps/android/app/src/main/jniLibs/$Target" 'libtu
 if (Test-Path $tun2proxyLibrary) {
     Remove-Item -LiteralPath $tun2proxyLibrary -Force
 }
-cargo run --locked -p torchnexus-core --features uniffi-bindgen --bin uniffi-bindgen -- generate target/$rustTarget/release/libtorchnexus_mobile_engine.so --language kotlin --out-dir apps/android/app/src/main/java --metadata-no-deps --no-format
+cargo run --locked -p torchnexus-core --features uniffi-bindgen --bin uniffi-bindgen -- generate crates/mobile-engine/src/torchnexus_mobile_engine.udl --language kotlin --out-dir apps/android/app/src/main/java --metadata-no-deps --no-format
 if ($AssembleApk) {
     $variant = $BuildType.Substring(0, 1).ToUpperInvariant() + $BuildType.Substring(1)
     Push-Location apps/android

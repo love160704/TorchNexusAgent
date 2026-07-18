@@ -828,13 +828,13 @@ private fun uniffiCheckContractApiVersion(lib: IntegrityCheckingUniffiLib) {
 }
 @Suppress("UNUSED_PARAMETER")
 private fun uniffiCheckApiChecksums(lib: IntegrityCheckingUniffiLib) {
-    if (lib.uniffi_torchnexus_mobile_engine_checksum_method_mobileengine_start() != 14784) {
+    if (lib.uniffi_torchnexus_mobile_engine_checksum_method_mobileengine_start() != 493) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_torchnexus_mobile_engine_checksum_method_mobileengine_stop() != 36631) {
+    if (lib.uniffi_torchnexus_mobile_engine_checksum_method_mobileengine_stop() != 8654) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
-    if (lib.uniffi_torchnexus_mobile_engine_checksum_constructor_mobileengine_new() != 12537) {
+    if (lib.uniffi_torchnexus_mobile_engine_checksum_constructor_mobileengine_new() != 7128) {
         throw RuntimeException("UniFFI API checksum mismatch: try cleaning and rebuilding your project")
     }
 }
@@ -1222,9 +1222,6 @@ public object FfiConverterString: FfiConverter<String, RustBuffer.ByValue> {
 
 public interface MobileEngineInterface {
     
-    /**
-     * Starts the Rust capture agent and sends TUN traffic through its private SOCKS5 listener.
-     */
     fun `start`(`tunFd`: kotlin.Int, `closeTunFd`: kotlin.Boolean, `configYaml`: kotlin.String, `mtu`: kotlin.UShort, `packetInformation`: kotlin.Boolean): kotlin.UShort
     
     fun `stop`()
@@ -1342,9 +1339,6 @@ open class MobileEngine: Disposable, AutoCloseable, MobileEngineInterface
     }
 
     
-    /**
-     * Starts the Rust capture agent and sends TUN traffic through its private SOCKS5 listener.
-     */
     @Throws(MobileEngineException::class)override fun `start`(`tunFd`: kotlin.Int, `closeTunFd`: kotlin.Boolean, `configYaml`: kotlin.String, `mtu`: kotlin.UShort, `packetInformation`: kotlin.Boolean): kotlin.UShort {
             return FfiConverterUShort.lift(
     callWithHandle {
@@ -1434,18 +1428,18 @@ sealed class MobileEngineException: kotlin.Exception() {
     
     class Configuration(
         
-        val v1: kotlin.String
+        val `message`: kotlin.String
         ) : MobileEngineException() {
         override val message
-            get() = "v1=${ v1 }"
+            get() = "message=${ `message` }"
     }
     
     class Runtime(
         
-        val v1: kotlin.String
+        val `message`: kotlin.String
         ) : MobileEngineException() {
         override val message
-            get() = "v1=${ v1 }"
+            get() = "message=${ `message` }"
     }
     
     class UnsupportedPlatform(
@@ -1499,12 +1493,12 @@ public object FfiConverterTypeMobileEngineError : FfiConverterRustBuffer<MobileE
             is MobileEngineException.Configuration -> (
                 // Add the size for the Int that specifies the variant plus the size needed for all fields
                 4UL
-                + FfiConverterString.allocationSize(value.v1)
+                + FfiConverterString.allocationSize(value.`message`)
             )
             is MobileEngineException.Runtime -> (
                 // Add the size for the Int that specifies the variant plus the size needed for all fields
                 4UL
-                + FfiConverterString.allocationSize(value.v1)
+                + FfiConverterString.allocationSize(value.`message`)
             )
             is MobileEngineException.UnsupportedPlatform -> (
                 // Add the size for the Int that specifies the variant plus the size needed for all fields
@@ -1525,12 +1519,12 @@ public object FfiConverterTypeMobileEngineError : FfiConverterRustBuffer<MobileE
             }
             is MobileEngineException.Configuration -> {
                 buf.putInt(3)
-                FfiConverterString.write(value.v1, buf)
+                FfiConverterString.write(value.`message`, buf)
                 Unit
             }
             is MobileEngineException.Runtime -> {
                 buf.putInt(4)
-                FfiConverterString.write(value.v1, buf)
+                FfiConverterString.write(value.`message`, buf)
                 Unit
             }
             is MobileEngineException.UnsupportedPlatform -> {

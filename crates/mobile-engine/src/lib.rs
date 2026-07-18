@@ -1,13 +1,11 @@
 #[cfg(any(target_os = "android", target_os = "ios"))]
 use std::os::fd::{AsRawFd, FromRawFd, OwnedFd};
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 #[cfg(any(target_os = "android", target_os = "ios"))]
 use std::thread::JoinHandle;
 
 use torchnexus_core::config::AppConfig;
 use torchnexus_runtime::AgentRuntime;
-
-uniffi::setup_scaffolding!();
 
 #[cfg(target_os = "android")]
 fn init_platform_logging() {
@@ -21,21 +19,20 @@ fn init_platform_logging() {
 #[cfg(not(target_os = "android"))]
 fn init_platform_logging() {}
 
-#[derive(Debug, thiserror::Error, uniffi::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum MobileEngineError {
     #[error("mobile engine is already running")]
     AlreadyRunning,
     #[error("mobile engine is not running")]
     NotRunning,
-    #[error("invalid configuration: {0}")]
-    Configuration(String),
-    #[error("failed to start runtime: {0}")]
-    Runtime(String),
+    #[error("invalid configuration: {message}")]
+    Configuration { message: String },
+    #[error("failed to start runtime: {message}")]
+    Runtime { message: String },
     #[error("TUN forwarding is only available on Android and iOS")]
     UnsupportedPlatform,
 }
 
-#[derive(uniffi::Object)]
 pub struct MobileEngine {
     state: Mutex<Option<RunningEngine>>,
 }
@@ -55,13 +52,11 @@ struct Tunnel {
     tun_fd: Option<OwnedFd>,
 }
 
-#[uniffi::export]
 impl MobileEngine {
-    #[uniffi::constructor]
-    pub fn new() -> Arc<Self> {
-        Arc::new(Self {
+    pub fn new() -> Self {
+        Self {
             state: Mutex::new(None),
-        })
+        }
     }
 
     /// Starts the Rust capture agent and sends TUN traffic through its private SOCKS5 listener.
@@ -86,12 +81,17 @@ impl MobileEngine {
             return Err(MobileEngineError::AlreadyRunning);
         }
 
-        let config = AppConfig::from_yaml_str(&config_yaml)
-            .map_err(|error| MobileEngineError::Configuration(error.to_string()))?;
+        let config = AppConfig::from_yaml_str(&config_yaml).map_err(|error| {
+            MobileEngineError::Configuration {
+                message: error.to_string(),
+            }
+        })?;
         let runtime = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()
-            .map_err(|error| MobileEngineError::Runtime(error.to_string()))?;
+            .map_err(|error| MobileEngineError::Runtime {
+                message: error.to_string(),
+            })?;
         let agent = runtime
             .block_on(AgentRuntime::start_with_private_socks5(
                 config,
@@ -101,7 +101,9 @@ impl MobileEngine {
                         .expect("valid loopback socket address"),
                 ),
             ))
-            .map_err(|error| MobileEngineError::Runtime(error.to_string()))?;
+            .map_err(|error| MobileEngineError::Runtime {
+                message: error.to_string(),
+            })?;
         let port = agent
             .private_socks5_bind_addr()
             .expect("mobile engine always enables its private SOCKS5 listener")
@@ -132,13 +134,17 @@ impl MobileEngine {
         let agent_stop_result = running
             .runtime
             .block_on(running.agent.stop())
-            .map_err(|error| MobileEngineError::Runtime(error.to_string()));
+            .map_err(|error| MobileEngineError::Runtime {
+                message: error.to_string(),
+            });
         if agent_stop_result.is_ok() {
             tracing::info!("移动端采集引擎已停止");
         }
         agent_stop_result
     }
 }
+
+uniffi::include_scaffolding!("torchnexus_mobile_engine");
 
 #[cfg(any(target_os = "android", target_os = "ios"))]
 fn start_tunnel(
@@ -154,7 +160,9 @@ fn start_tunnel(
     let owned_tun_fd = close_tun_fd.then(|| unsafe { OwnedFd::from_raw_fd(tun_fd) });
     let mut args = tun2proxy::Args::default();
     args.proxy = tun2proxy::ArgProxy::try_from(format!("socks5://127.0.0.1:{port}").as_str())
-        .map_err(|error| MobileEngineError::Runtime(error.to_string()))?;
+        .map_err(|error| MobileEngineError::Runtime {
+            message: error.to_string(),
+        })?;
     args.tun_fd = Some(
         owned_tun_fd
             .as_ref()
